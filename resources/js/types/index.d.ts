@@ -41,3 +41,12 @@ export interface User {
     updated_at: string;
     [key: string]: unknown; // This allows for additional properties...
 }
+
+export interface AssetCategory {
+  id: number
+  code: string
+  name: string
+  name_en?: string
+  created_at?: string
+  updated_at?: string
+}
