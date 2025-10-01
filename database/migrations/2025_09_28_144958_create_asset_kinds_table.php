@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('asset_kinds', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('category_id')->constrained('asset_categories')->cascadeOnDelete();
-            $table->string('code', 50)->nullable();           // รหัสครุภัณฑ์
-            $table->string('name');                           // ชื่อชนิดครุภัณฑ์
+            $table->foreignId('asset_category_id')->constrained('asset_categories')->cascadeOnDelete();
+            $table->string('asset_code', 50)->nullable();           // รหัสครุภัณฑ์
+            $table->string('type_name');                           // ชื่อชนิดครุภัณฑ์
             $table->unsignedSmallInteger('useful_life')->nullable(); // อายุการใช้งาน (ปี)
             $table->decimal('depreciation_rate', 5, 2)->nullable();  // ค่าเสื่อม (% ต่อปี)
             $table->timestamps();
