@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react"
 import { router } from "@inertiajs/react"
 import { User } from "@/types"
+import { toast } from "sonner"
 
 import {
   Dialog,
@@ -14,6 +15,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import user from "@/routes/user"
+import { Loader2 } from "lucide-react"
 
 interface EditUserDialogProps {
   open: boolean
@@ -24,7 +26,7 @@ interface EditUserDialogProps {
 export default function EditUserDialog({ open, onOpenChange, userData }: EditUserDialogProps) {
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
-
+  const [saving, setSaving] = useState(false)
   // โหลดค่ามาใส่ตอนเปิด dialog
   useEffect(() => {
     if (userData) {
@@ -35,10 +37,22 @@ export default function EditUserDialog({ open, onOpenChange, userData }: EditUse
 
   const handleUpdate = () => {
     if (!userData) return
+    setSaving(true)
     router.put(
-      user.show(userData.id).url,
+      user.update(userData.id).url,
       { name, email },
-      { preserveState: true, onSuccess: () => onOpenChange(false) }
+      { 
+        preserveState: true, 
+        onSuccess: () => {
+          onOpenChange(false)
+          setSaving(false)
+          toast.success("อัปเดตผู้ใช้เรียบร้อยแล้ว")
+        },
+        onError: () => {
+          setSaving(false)
+          toast.error("ไม่สามารถอัปเดตผู้ใช้ได้")
+        }, 
+      }
     )
   }
 
@@ -79,7 +93,10 @@ export default function EditUserDialog({ open, onOpenChange, userData }: EditUse
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button onClick={handleUpdate}>Save</Button>
+          <Button onClick={handleUpdate} disabled={saving}>
+              {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {saving ? "Saving..." : "Save"}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

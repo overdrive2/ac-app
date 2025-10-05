@@ -1,11 +1,10 @@
 import { useState } from 'react'
-import { dashboard, categories } from '@/routes'
-import category from '@/routes/category'
+import route from 'ziggy-js'
 import AppLayout from '@/layouts/app-layout'
-import { AssetCategory, type BreadcrumbItem } from '@/types'
+import { Asset, type BreadcrumbItem } from '@/types'
 import { Head, router, usePage } from '@inertiajs/react'
 
-import { assetCategoryColumns } from '@/columns/assetCategoryColumns'
+import { assetColumns } from '@/columns/assetColumns'
 
 import { PlaceholderPattern } from '@/components/ui/placeholder-pattern'
 import { Input } from '@/components/ui/input'
@@ -14,62 +13,57 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { DataTable } from '@/components/datatable'
 import AppPagination from '@/components/pagination'
 
-import EditAssetCategoryDialog from "@/components/edit-asset-category-dialog"
+import EditAssetDialog from '@/components/edit-asset-dialog'
 import { toast } from 'sonner'
-import { CirclePlus } from 'lucide-react'
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
     title: 'Dashboard',
-    href: dashboard().url,
+    href: route('dashboard'),
   },
   {
-    title: 'Asset Categories',
-    href: categories().url,
+    title: 'Assets',
+    href: route('assets.index'),
   },
 ]
 
-export default function AssetCategoryIndex() {
+export default function AssetIndex() {
   const { rows, filters } = usePage().props
-  const [search, setSearch] = useState(filters?.search || "")
+  const [search, setSearch] = useState(filters?.search || '')
 
   const [loading, setLoading] = useState(false)
-  const [loadingCategory, setLoadingCategory] = useState(false)
-  const [editingCategory, setEditingCategory] = useState<AssetCategory | null>(null)
+  const [loadingAsset, setLoadingAsset] = useState(false)
+  const [editingAsset, setEditingAsset] = useState<Asset | null>(null)
   const [dialogOpen, setDialogOpen] = useState(false)
 
-  /* ---------- Edit ---------- */
-  const openEdit = async (categoryData: AssetCategory) => {
-    setLoadingCategory(true)
+  const openEdit = async (assetData: Asset) => {
+    setLoadingAsset(true)
     setDialogOpen(true)
 
     try {
-      // ✅ inertia route helper (assetCategory.show)
-      const res = await fetch(category.show(categoryData).url)
-      const data: AssetCategory = await res.json()
-      setEditingCategory(data)
+      const res = await fetch(route('assets.show', assetData.id))
+      const data: Asset = await res.json()
+      setEditingAsset(data)
     } finally {
-      setLoadingCategory(false)
+      setLoadingAsset(false)
     }
   }
 
-  /* ---------- Delete ---------- */
-  const deleteCategory = (id: string | number) => {
-    if (!confirm("Are you sure you want to delete this category?")) return
+  const deleteAsset = (id: string | number) => {
+    if (!confirm('Are you sure you want to delete this asset?')) return
 
-    router.delete(category.destroy({ id }).url, {
+    router.delete(route('assets.destroy', id), {
       preserveScroll: true,
       onStart: () => setLoading(true),
       onFinish: () => {
         setLoading(false)
-        toast.info("Asset Categories is deleted.")
+        toast.info('Asset deleted.')
       },
     })
   }
 
-  const columns = assetCategoryColumns({ openEdit, deleteCategory })
+  const columns = assetColumns({ openEdit, deleteAsset })
 
-  // 🔎 lazy load pagination
   const handlePageChange = (url: string) => {
     if (!url) return
     router.get(
@@ -85,10 +79,9 @@ export default function AssetCategoryIndex() {
     )
   }
 
-  // 🔎 search
   const handleSearch = () => {
     router.get(
-      categories().url,
+      route('assets.index'),
       { search },
       {
         preserveState: true,
@@ -101,14 +94,13 @@ export default function AssetCategoryIndex() {
 
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
-      <Head title="Categories" />
+      <Head title="Assets" />
       <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
         <div className="relative min-h-[100vh] flex-1 overflow-hidden rounded-xl border border-sidebar-border/70 md:min-h-min dark:border-sidebar-border">
-          {/* Search bar */}
           <div className="flex gap-2 p-4">
             <Input
               type="search"
-              placeholder="Search categories..."
+              placeholder="Search assets..."
               value={search}
               className="lg:w-xs w-full"
               onChange={e => setSearch(e.target.value)}
@@ -137,12 +129,11 @@ export default function AssetCategoryIndex() {
         </div>
       </div>
 
-      {/* ---------- Edit Dialog ---------- */}
-      <EditAssetCategoryDialog
+      <EditAssetDialog
         open={dialogOpen}
         onOpenChange={setDialogOpen}
-        categoryData={editingCategory}
-        loading={loadingCategory}
+        assetData={editingAsset}
+        loading={loadingAsset}
       />
     </AppLayout>
   )

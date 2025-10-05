@@ -1,0 +1,39 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\DummyClass;
+use App\Http\Requests\DummyRequest;
+use App\Http\Resources\DummyResource;
+use Illuminate\Http\Request;
+
+class DummyController extends Controller
+{
+    public function index()
+    {
+        return DummyResource::collection(DummyClass::paginate());
+    }
+
+    public function store(DummyRequest $request)
+    {
+        $item = DummyClass::create($request->validated());
+        return new DummyResource($item);
+    }
+
+    public function show(DummyClass $item)
+    {
+        return new DummyResource($item);
+    }
+
+    public function update(DummyRequest $request, DummyClass $item)
+    {
+        $item->update($request->validated());
+        return new DummyResource($item);
+    }
+
+    public function destroy(DummyClass $item)
+    {
+        $item->delete();
+        return response()->json(['message' => 'Deleted successfully']);
+    }
+}

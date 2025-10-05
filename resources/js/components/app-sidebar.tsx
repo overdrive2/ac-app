@@ -10,10 +10,10 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { categories, dashboard, users } from '@/routes';
+import { assetkinds, categories, dashboard, users } from '@/routes';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid, SquareLibrary, User2 } from 'lucide-react';
+import { BookOpen, Folder, FolderTree, LayoutGrid, SquareLibrary, User2 } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const mainNavItems: NavItem[] = [

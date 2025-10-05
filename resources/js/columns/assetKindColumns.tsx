@@ -1,7 +1,7 @@
 // resources/js/Columns/assetCategoryColumns.tsx
 
 import { ColumnDef } from "@tanstack/react-table"
-import { AssetCategory } from "@/types"
+import { AssetKind } from "@/types"
 import { Button } from "@/components/ui/button"
 import {
   Popover,
@@ -10,23 +10,22 @@ import {
 } from "@/components/ui/popover"
 import { PopoverClose } from "@radix-ui/react-popover"
 import { Edit, List, Trash } from "lucide-react"
-import { assetkinds } from "@/routes"
-import { router } from "@inertiajs/react"
 
-interface AssetCategoryColumnsProps {
-  openEdit: (category: AssetCategory) => void
-  deleteCategory: (id: string | number) => void
+interface AssetKindColumnsProps {
+  openEdit: (assetkind: AssetKind) => void
+  deleteAssetKind: (id: string | number) => void
 }
 
-export function assetCategoryColumns({
+export function assetKindColumns({
   openEdit,
-  deleteCategory,
-}: AssetCategoryColumnsProps): ColumnDef<AssetCategory>[] {
+  deleteAssetKind,
+}: AssetKindColumnsProps): ColumnDef<AssetKind>[] {
   return [
     { accessorKey: "id", header: "ID" },
-    { accessorKey: "code", header: "Code" },
-    { accessorKey: "name", header: "Name (TH)" },
-    { accessorKey: "name_en", header: "Name (EN)" },
+    { accessorKey: "asset_code", header: "Code" },
+    { accessorKey: "type_name", header: "Name (TH)" },
+    { accessorKey: "useful_life", header: "Useful Life" },
+    { accessorKey: "depreciation_rate", header: "Depreciation Rate" },
 
     /* ------- Action column ------- */
     {
@@ -41,7 +40,7 @@ export function assetCategoryColumns({
           </PopoverTrigger>
 
           <PopoverContent className="p-0 w-auto">
-            {/* 2. Edit */}
+            {/* 1. Edit */}
             <Button
               variant="ghost"
               className="w-full justify-start px-3 py-2 hover:bg-muted"
@@ -56,22 +55,12 @@ export function assetCategoryColumns({
               <Button
                 variant="ghost"
                 className="w-full justify-start px-3 py-2 text-destructive hover:bg-muted"
-                onClick={() => deleteCategory(row.original.id)}
+                onClick={() => deleteAssetKind(row.original.id)}
               >
                 <Trash className="mr-2 h-4 w-4" />
                 Delete
               </Button>
             </PopoverClose>
-
-            {/* AssetKind View */}
-            <Button
-              variant="ghost"
-              className="w-full justify-start px-3 py-2 hover:bg-muted"
-              onClick={() => router.get(assetkinds(row.original).url)}
-            >
-              <List className="mr-2 h-4 w-4" />
-              AssetKind
-            </Button>
           </PopoverContent>
         </Popover>
       ),

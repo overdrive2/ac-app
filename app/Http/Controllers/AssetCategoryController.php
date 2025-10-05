@@ -13,8 +13,8 @@ class AssetCategoryController extends Controller
      */
     public function index(Request $request)
     {
-        $categories = AssetCategory::when(request('search'), fn($q) => 
-                $q->where('name', 'like', '%'.request('search').'%')
+        $categories = AssetCategory::when($request->search, fn($q) => 
+                $q->where('name', 'like', '%'.$request->search.'%')
             )
             ->orderBy('code')
             ->paginate(20)
@@ -76,8 +76,6 @@ class AssetCategoryController extends Controller
     {
         $assetCategory->delete();
 
-        return response()->json([
-            'message' => 'ลบประเภททรัพย์สินเรียบร้อย'
-        ]);
+        return redirect()->back()->with('success', 'ลบประเภททรัพย์สินเรียบร้อย');
     }
 }

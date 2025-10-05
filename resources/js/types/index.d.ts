@@ -50,3 +50,14 @@ export interface AssetCategory {
   created_at?: string
   updated_at?: string
 }
+
+export interface AssetKind {
+  id: number
+  asset_category_id: number,
+  asset_code: string
+  type_name: string
+  useful_life?: number
+  depreciation_rate?: number
+  created_at?: string
+  updated_at?: string
+}

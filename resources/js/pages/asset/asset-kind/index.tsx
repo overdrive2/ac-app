@@ -1,11 +1,10 @@
 import { useState } from 'react'
-import { dashboard, categories } from '@/routes'
-import category from '@/routes/category'
+import { dashboard, categories, assetkinds } from '@/routes'
 import AppLayout from '@/layouts/app-layout'
-import { AssetCategory, type BreadcrumbItem } from '@/types'
+import { AssetKind, type BreadcrumbItem } from '@/types'
 import { Head, router, usePage } from '@inertiajs/react'
 
-import { assetCategoryColumns } from '@/columns/assetCategoryColumns'
+import { assetKindColumns } from '@/columns/assetKindColumns'
 
 import { PlaceholderPattern } from '@/components/ui/placeholder-pattern'
 import { Input } from '@/components/ui/input'
@@ -14,60 +13,62 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { DataTable } from '@/components/datatable'
 import AppPagination from '@/components/pagination'
 
-import EditAssetCategoryDialog from "@/components/edit-asset-category-dialog"
+import EditAssetKindDialog from '@/components/edit-asset-kind-dialog'
+import assetkind from '@/routes/assetkind'
 import { toast } from 'sonner'
 import { CirclePlus } from 'lucide-react'
+import NewAssetKindDialog from '@/components/new-asset-kind-dialog'
 
-const breadcrumbs: BreadcrumbItem[] = [
-  {
-    title: 'Dashboard',
-    href: dashboard().url,
-  },
-  {
-    title: 'Asset Categories',
-    href: categories().url,
-  },
-]
-
-export default function AssetCategoryIndex() {
-  const { rows, filters } = usePage().props
-  const [search, setSearch] = useState(filters?.search || "")
+export default function AssetKindIndex() {
+  const { rows, filters, category: currentCategory } = usePage().props;
+  
+  const [search, setSearch] = useState(filters?.search)
 
   const [loading, setLoading] = useState(false)
-  const [loadingCategory, setLoadingCategory] = useState(false)
-  const [editingCategory, setEditingCategory] = useState<AssetCategory | null>(null)
+  const [loadingAssetKind, setLoadingAssetKind] = useState(false)
+  const [editingAssetKind, setEditingAssetKind] = useState<AssetKind | null>(null)
+  const [dialogNewOpen, setDialogNewOpen] = useState(false)
   const [dialogOpen, setDialogOpen] = useState(false)
 
+    /* ---------- Breadcrumbs ---------- */
+  const breadcrumbs: BreadcrumbItem[] = [
+    { title: "Dashboard", href: dashboard().url },
+    { title: "Asset Categories", href: categories().url },
+    { title: currentCategory.name ?? "", href: '' }, // แสดงชื่อหมวดหมู่ที่เลือก
+  ]
+
+      /* ---------- New ---------- */
+  const openNew = async () => {
+    setDialogNewOpen(true)
+  }
+
   /* ---------- Edit ---------- */
-  const openEdit = async (categoryData: AssetCategory) => {
-    setLoadingCategory(true)
+  const openEdit = async (row: AssetKind) => {
+    setLoadingAssetKind(true)
     setDialogOpen(true)
 
     try {
-      // ✅ inertia route helper (assetCategory.show)
-      const res = await fetch(category.show(categoryData).url)
-      const data: AssetCategory = await res.json()
-      setEditingCategory(data)
+      const res = await fetch(assetkind.show(row).url)
+      const data: AssetKind = await res.json()
+      setEditingAssetKind(data)
     } finally {
-      setLoadingCategory(false)
+      setLoadingAssetKind(false)
     }
   }
 
   /* ---------- Delete ---------- */
-  const deleteCategory = (id: string | number) => {
+  const deleteAssetKind = (id: string | number) => {
     if (!confirm("Are you sure you want to delete this category?")) return
 
-    router.delete(category.destroy({ id }).url, {
+    router.delete(assetkind.destroy({ id }).url, {
       preserveScroll: true,
-      onStart: () => setLoading(true),
       onFinish: () => {
-        setLoading(false)
         toast.info("Asset Categories is deleted.")
       },
     })
   }
 
-  const columns = assetCategoryColumns({ openEdit, deleteCategory })
+  const columns = assetKindColumns({ openEdit, deleteAssetKind })
 
   // 🔎 lazy load pagination
   const handlePageChange = (url: string) => {
@@ -101,11 +102,12 @@ export default function AssetCategoryIndex() {
 
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
-      <Head title="Categories" />
+      <Head title={currentCategory.name} />
       <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
         <div className="relative min-h-[100vh] flex-1 overflow-hidden rounded-xl border border-sidebar-border/70 md:min-h-min dark:border-sidebar-border">
           {/* Search bar */}
           <div className="flex gap-2 p-4">
+            <Button onClick={openNew} variant="outline"><CirclePlus /> Add</Button>
             <Input
               type="search"
               placeholder="Search categories..."
@@ -137,12 +139,18 @@ export default function AssetCategoryIndex() {
         </div>
       </div>
 
+      {/* ---------- New Dialog ---------- */}
+      <NewAssetKindDialog
+        open={dialogNewOpen}
+        onOpenChange={setDialogNewOpen}
+        currentCategory={currentCategory}
+      />
       {/* ---------- Edit Dialog ---------- */}
-      <EditAssetCategoryDialog
+      <EditAssetKindDialog
         open={dialogOpen}
         onOpenChange={setDialogOpen}
-        categoryData={editingCategory}
-        loading={loadingCategory}
+        assetKindData={editingAssetKind}
+        loading={loadingAssetKind}
       />
     </AppLayout>
   )

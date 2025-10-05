@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react"
 import { router } from "@inertiajs/react"
-import { AssetCategory } from "@/types"
-import { toast } from "sonner"
+import { AssetKind } from "@/types"
 
 import {
   Dialog,
@@ -16,42 +15,48 @@ import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 
 import category from "@/routes/category"
+import { toast } from "sonner"
+import assetkind from "@/routes/assetkind"
 
-interface EditAssetCategoryDialogProps {
+interface EditAssetKindDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  categoryData: AssetCategory | null
+  assetKindData: AssetKind | null
   loading?: boolean
 }
 
-export default function EditAssetCategoryDialog({
+export default function EditAssetKindDialog({
   open,
   onOpenChange,
-  categoryData,
+  assetKindData,
   loading = false,
-}: EditAssetCategoryDialogProps) {
-  const [code, setCode] = useState("")
-  const [name, setName] = useState("")
-  const [nameEn, setNameEn] = useState("")
+}: EditAssetKindDialogProps) {
+  const [asset_code, setAssetCode] = useState("")
+  const [type_name, setTypeName] = useState("")
+  const [useful_life, setUsefulLife] = useState(0)
+  const [depreciation_rate, setDepreciationRate] = useState(0)
+
 
   // โหลดค่าตอนเปิด dialog
   useEffect(() => {
-    if (categoryData) {
-      setCode(categoryData.code || "")
-      setName(categoryData.name || "")
-      setNameEn(categoryData.name_en || "")
+    if (assetKindData) {
+      setAssetCode(assetKindData.asset_code || "")
+      setTypeName(assetKindData.type_name || "")
+      setUsefulLife(assetKindData.useful_life)
+      setDepreciationRate(assetKindData.depreciation_rate)
     }
-  }, [categoryData])
+  }, [assetKindData])
 
   const handleUpdate = () => {
-    if (!categoryData) return
+    if (!assetKindData) return
 
     router.put(
-      category.update(categoryData.id).url,
+      assetkind.update(assetKindData.id).url,
       {
-        code,
-        name,
-        name_en: nameEn,
+        asset_code,
+        type_name,
+        useful_life,
+        depreciation_rate
       },
       {
         preserveState: true,
@@ -67,7 +72,7 @@ export default function EditAssetCategoryDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Edit Asset Category</DialogTitle>
+          <DialogTitle>Edit Assetkind</DialogTitle>
           <DialogDescription>
             Update asset category information
           </DialogDescription>
@@ -75,37 +80,50 @@ export default function EditAssetCategoryDialog({
 
         <div className="grid gap-4 py-4">
           <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="code" className="text-right">
+            <Label htmlFor="asset_code" className="text-right">
               Code
             </Label>
             <Input
-              id="code"
-              value={code}
-              onChange={(e) => setCode(e.target.value)}
+              id="asset_code"
+              value={asset_code}
+              onChange={(e) => setAssetCode(e.target.value)}
               className="col-span-3"
             />
           </div>
 
           <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="name" className="text-right">
+            <Label htmlFor="type_name" className="text-right">
               Name (TH)
             </Label>
             <Input
-              id="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              id="type_name"
+              value={type_name}
+              onChange={(e) => setTypeName(e.target.value)}
               className="col-span-3"
             />
           </div>
 
           <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="name_en" className="text-right">
-              Name (EN)
+            <Label htmlFor="useful_life" className="text-right">
+              Useful Life
             </Label>
             <Input
-              id="name_en"
-              value={nameEn}
-              onChange={(e) => setNameEn(e.target.value)}
+              id="useful_life"
+              value={useful_life}
+              onChange={(e) => setUsefulLife(e.target.value)}
+              className="col-span-3"
+            />
+          </div>
+
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="depreciation_rate" className="text-right">
+              Depreciation Rate
+            </Label>
+            <Input
+              id="depreciation_rate"
+              type="number"
+              value={depreciation_rate}
+              onChange={(e) => setDepreciationRate(e.target.value)}
               className="col-span-3"
             />
           </div>

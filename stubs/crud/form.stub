@@ -1,0 +1,31 @@
+import { useState } from 'react'
+import { router } from '@inertiajs/react'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
+
+export default function DummyClassForm({ item, open, onOpenChange }) {
+  const [name, setName] = useState(item?.name || '')
+
+  const handleSubmit = () => {
+    if (item?.id) {
+      router.put(route('DummyTable.update', item.id), { name }, { onSuccess: () => onOpenChange(false) })
+    } else {
+      router.post(route('DummyTable.store'), { name }, { onSuccess: () => onOpenChange(false) })
+    }
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{item ? 'Edit DummyClass' : 'New DummyClass'}</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4">
+          <Input value={name} onChange={e => setName(e.target.value)} placeholder="Name" />
+          <Button onClick={handleSubmit}>{item ? 'Update' : 'Create'}</Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  )
+}
