@@ -1,10 +1,13 @@
 import { useState } from 'react'
+import { dashboard, categories, repository } from '@/routes'
+import category from '@/routes/category'
 import AppLayout from '@/layouts/app-layout'
-import { Asset, type BreadcrumbItem } from '@/types'
+import { AssetCategory, Vendor, type BreadcrumbItem } from '@/types'
 import { Head, router, usePage } from '@inertiajs/react'
 
-import { assetColumns } from '@/columns/assetColumns'
+import { vendorColumns } from '@/columns/vendorColumns'
 
+import { PlaceholderPattern } from '@/components/ui/placeholder-pattern'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -12,66 +15,73 @@ import { DataTable } from '@/components/datatable'
 import AppPagination from '@/components/pagination'
 
 import { toast } from 'sonner'
-import { assetkinds, categories, dashboard } from '@/routes'
-import assets from '@/routes/assets'
 import { CirclePlus } from 'lucide-react'
-import NewAssetDialog from '@/components/new-asset-dialog'
-import assetkind from '@/routes/assetkind'
-import asset from '@/routes/asset'
+import VendorDialog from '@/components/vendor-dialog'
+import vendors from '@/routes/vendors'
 
-export default function AssetIndex() {
-  const { rows, filters, assetkind: currentAssetKind, category, vendors } = usePage().props
-  const [search, setSearch] = useState(filters?.search || '')
+const breadcrumbs: BreadcrumbItem[] = [
+  {
+    title: 'Dashboard',
+    href: dashboard().url,
+  },
+  {
+    title: 'Repository',
+    href: repository().url,
+  },
+  {
+    title: 'Vendors',
+    href: '',
+  },
+]
+
+export default function AssetCategoryIndex() {
+  const { rows, filters } = usePage().props
+  const [search, setSearch] = useState(filters?.search || "")
 
   const [loading, setLoading] = useState(false)
-  const [loadingAsset, setLoadingAsset] = useState(false)
-  const [dataAsset, setDataAsset] = useState<Asset | null>(null)
-  const [dialogNewOpen, setDialogNewOpen] = useState(false)
+  const [loadingCategory, setLoadingCategory] = useState(false)
+  const [dsState, setDsState] = useState('new')
+  const [dataVendor, setDataVendor] = useState<Vendor | null>(null)
   const [dialogOpen, setDialogOpen] = useState(false)
 
-  const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'Dashboard', href: dashboard().url },
-    { title: "Asset Categories", href: categories().url },
-    { title: category.name ?? '', href: assetkinds(category).url },
-    { title: currentAssetKind.type_name ?? '', href: '' },
-  ];
+  /* ---------- Edit ---------- */
+  const openEdit = async (vendorData: Vendor) => {
+    setDsState('edit')
+    setDialogOpen(true)
 
-  const [dsState, setDsState] = useState("update")
-
-  const openNew = async () => {
-    setDsState("insert")
-    setDialogNewOpen(true)
-  }
-
-  const openEdit = async (assetData: Asset) => {
-    setDsState("update")
-    setLoadingAsset(true)
-    setDialogNewOpen(true)
     try {
-      const res = await fetch(assets.edit(assetData).url)
-      const data = await res.json();
-      const asset : Asset = await data.asset;
-      setDataAsset(asset)
+      // ✅ inertia route helper (assetCategory.show)
+      const res = await fetch(vendors.show(vendorData).url)
+      const data: Vendor = await res.json()
+      setDataVendor(data)
     } finally {
-      setLoadingAsset(false)
+      setLoadingCategory(false)
     }
   }
 
-  const deleteAsset = (id: string | number) => {
-    if (!confirm('Are you sure you want to delete this asset?')) return
+  /* ---------- Delete ---------- */
+  const deleteVendor = (id: number) => {
+    if (!confirm("Are you sure you want to delete this category?")) return
 
-    router.delete(route('assets.destroy', id), {
+    router.delete(category.destroy({ id }).url, {
       preserveScroll: true,
       onStart: () => setLoading(true),
       onFinish: () => {
         setLoading(false)
-        toast.info('Asset deleted.')
+        toast.info("Asset Categories is deleted.")
       },
     })
   }
 
-  const columns = assetColumns({ openEdit, deleteAsset })
+  const columns = vendorColumns({ openEdit, deleteVendor })
 
+  const openNew =  () => {
+    setDialogOpen(true)
+    setDsState('new')
+    setDataVendor(null)
+  }
+
+  // 🔎 lazy load pagination
   const handlePageChange = (url: string) => {
     if (!url) return
     router.get(
@@ -87,9 +97,10 @@ export default function AssetIndex() {
     )
   }
 
+  // 🔎 search
   const handleSearch = () => {
     router.get(
-      assets.index(assetkind).url,
+      vendors.index().url,
       { search },
       {
         preserveState: true,
@@ -102,14 +113,15 @@ export default function AssetIndex() {
 
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
-      <Head title="Assets" />
+      <Head title="Categories" />
       <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
         <div className="relative min-h-[100vh] flex-1 overflow-hidden rounded-xl border border-sidebar-border/70 md:min-h-min dark:border-sidebar-border">
+          {/* Search bar */}
           <div className="flex gap-2 p-4">
             <Button onClick={openNew} variant="outline"><CirclePlus /> Add</Button>
             <Input
               type="search"
-              placeholder="Search assets..."
+              placeholder="Search categories..."
               value={search}
               className="lg:w-xs w-full"
               onChange={e => setSearch(e.target.value)}
@@ -131,17 +143,16 @@ export default function AssetIndex() {
               </div>
             </div>
           ) : (
-            <div></div>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <PlaceholderPattern className="h-24 w-24 text-muted-foreground" />
+            </div>
           )}
         </div>
       </div>
-      <NewAssetDialog
-        open={dialogNewOpen}
-        onOpenChange={setDialogNewOpen}
-        form={dataAsset}
-        assetkind={currentAssetKind}
-        category={category}
-        vendors={vendors}
+      <VendorDialog 
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        form={dataVendor}
         dsState={dsState}
       />
     </AppLayout>

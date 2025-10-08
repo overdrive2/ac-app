@@ -41,6 +41,15 @@ export function assetCategoryColumns({
           </PopoverTrigger>
 
           <PopoverContent className="p-0 w-auto">
+            {/* AssetKind View */}
+            <Button
+              variant="ghost"
+              className="w-full justify-start px-3 py-2 hover:bg-muted"
+              onClick={() => router.get(assetkinds(row.original).url)}
+            >
+              <List className="mr-2 h-4 w-4" />
+              AssetKind
+            </Button>
             {/* 2. Edit */}
             <Button
               variant="ghost"
@@ -62,16 +71,6 @@ export function assetCategoryColumns({
                 Delete
               </Button>
             </PopoverClose>
-
-            {/* AssetKind View */}
-            <Button
-              variant="ghost"
-              className="w-full justify-start px-3 py-2 hover:bg-muted"
-              onClick={() => router.get(assetkinds(row.original).url)}
-            >
-              <List className="mr-2 h-4 w-4" />
-              AssetKind
-            </Button>
           </PopoverContent>
         </Popover>
       ),

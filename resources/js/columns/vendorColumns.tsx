@@ -1,7 +1,7 @@
 // resources/js/Columns/assetCategoryColumns.tsx
 
 import { ColumnDef } from "@tanstack/react-table"
-import { AssetKind } from "@/types"
+import { Vendor } from "@/types"
 import { Button } from "@/components/ui/button"
 import {
   Popover,
@@ -9,25 +9,26 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import { PopoverClose } from "@radix-ui/react-popover"
-import { Edit, List, NotebookText, Trash } from "lucide-react"
-import assets from "@/routes/assets"
+import { Edit, List, Trash } from "lucide-react"
+import { assetkinds } from "@/routes"
 import { router } from "@inertiajs/react"
 
-interface AssetKindColumnsProps {
-  openEdit: (assetkind: AssetKind) => void
-  deleteAssetKind: (id: string | number) => void
+interface VendorColumnsProps {
+  openEdit: (category: Vendor) => void
+  deleteVendor: (id: string | number) => void
 }
 
-export function assetKindColumns({
+export function vendorColumns({
   openEdit,
-  deleteAssetKind,
-}: AssetKindColumnsProps): ColumnDef<AssetKind>[] {
+  deleteVendor,
+}: VendorColumnsProps): ColumnDef<Vendor>[] {
   return [
     { accessorKey: "id", header: "ID" },
-    { accessorKey: "asset_code", header: "Code" },
-    { accessorKey: "type_name", header: "Name (TH)" },
-    { accessorKey: "useful_life", header: "Useful Life" },
-    { accessorKey: "depreciation_rate", header: "Depreciation Rate" },
+    { accessorKey: "name", header: "ชื่อร้าน/บริษัท" },
+    { accessorKey: "address", header: "ที่อยู่" },
+    { accessorKey: "owner_name", header: "ชื่อผู้ติดต่อ" },
+    { accessorKey: "phone", header: "เบอร์โทร" },
+    { accessorKey: "tax_id", header: "TaxID" },
 
     /* ------- Action column ------- */
     {
@@ -42,15 +43,7 @@ export function assetKindColumns({
           </PopoverTrigger>
 
           <PopoverContent className="p-0 w-auto">
-            <Button
-              variant="ghost"
-              className="w-full justify-start px-3 py-2 hover:bg-muted"
-              onClick={() => router.get(assets.index(row.original.id).url)}
-            >
-              <NotebookText className="mr-2 h-4 w-4" />
-              Assets
-            </Button>
-
+            {/* 1. Edit */}
             <Button
               variant="ghost"
               className="w-full justify-start px-3 py-2 hover:bg-muted"
@@ -60,11 +53,12 @@ export function assetKindColumns({
               Edit
             </Button>
 
+            {/* 2. Delete */}
             <PopoverClose asChild>
               <Button
                 variant="ghost"
                 className="w-full justify-start px-3 py-2 text-destructive hover:bg-muted"
-                onClick={() => deleteAssetKind(row.original.id)}
+                onClick={() => deleteVendor(row.original.id)}
               >
                 <Trash className="mr-2 h-4 w-4" />
                 Delete

@@ -61,3 +61,29 @@ export interface AssetKind {
   created_at?: string
   updated_at?: string
 }
+
+export interface Vendor {
+  id: number
+  name: string
+  address?: string
+  phone?: string
+  owner_name?: string
+  tax_id?: string
+  created_at?: string
+  updated_at?: string
+}
+
+export interface Asset {
+  id: number
+  asset_code: string
+  type_name: string
+  category: {
+    name: string
+  }
+  kind: {
+    name: string
+  }
+  vendor: {
+    name: string
+  }
+}

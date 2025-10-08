@@ -28,4 +28,10 @@ class Asset extends Model
     {
         return $this->kind?->category();
     }
+
+    // ความสัมพันธ์กับผู้ขาย
+    public function vendor(): BelongsTo
+    {
+        return $this->belongsTo(Vendor::class);
+    }
 }

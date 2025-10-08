@@ -10,7 +10,7 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { assetkinds, categories, dashboard, users } from '@/routes';
+import { assetkinds, categories, dashboard, repository, users } from '@/routes';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
 import { BookOpen, Folder, FolderTree, LayoutGrid, SquareLibrary, User2 } from 'lucide-react';
@@ -37,7 +37,7 @@ const mainNavItems: NavItem[] = [
 const footerNavItems: NavItem[] = [
     {
         title: 'Repository',
-        href: 'https://github.com/laravel/react-starter-kit',
+        href: repository(),
         icon: Folder,
     },
     {

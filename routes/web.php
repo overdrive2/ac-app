@@ -1,9 +1,11 @@
 <?php
 
 use App\Http\Controllers\AssetCategoryController;
+use App\Http\Controllers\AssetController;
 use App\Http\Controllers\AssetKindController;
 use App\Http\Controllers\TestController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\VendorController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -13,7 +15,8 @@ Route::get('/', function () {
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function () { return Inertia::render('dashboard'); })->name('dashboard');
-    
+    Route::get('repository', function () { return Inertia::render('repositories/index'); })->name('repository');
+
     Route::get('users', [UserController::class, 'index'])->name('users');
     Route::get('/user/{user}', [UserController::class, 'show'])->name('user.show');
     Route::put('/user/{user}', [UserController::class, 'update'])->name('user.update');
@@ -32,6 +35,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     //Get next code
     Route::get('assetkind/next-code/{category}', [AssetKindController::class, 'nextCode'])->name('assetkind.nextcode');
 
+    Route::get('assets/{assetkind}', [AssetController::class, 'index'])->name('assets.index');
+    Route::resource('assets', AssetController::class)->only(['show','store', 'edit', 'update', 'destroy']);
+    
+    Route::resource('vendors', VendorController::class)->only(['index', 'show', 'store', 'update', 'destroy']);
 
     Route::get('tests', function () {
         return Inertia::render('Test/Index');

@@ -9,9 +9,10 @@ use Illuminate\Http\Request;
 
 class AssetController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request, AssetKind $assetkind)
     {
-        $query = Asset::with(['kind.category', 'vendor']);
+        $query = Asset::with(['kind.category', 'vendor'])
+            ->where('asset_kind_id', $assetkind->id);
 
         if ($request->filled('search')) {
             $search = $request->input('search');
@@ -21,21 +22,18 @@ class AssetController extends Controller
             });
         }
 
-        if ($request->filled('asset_kind_id')) {
-            $query->where('asset_kind_id', $request->asset_kind_id);
-        }
-
         if ($request->filled('vendor_id')) {
             $query->where('vendor_id', $request->vendor_id);
         }
 
         $assets = $query->latest()->paginate(20);
-
-        return inertia('asset.index', [
-            'assets' => $assets,
+        
+        return inertia('asset/index', [
+            'rows' => $assets,
             'filters' => $request->only('search', 'asset_kind_id', 'vendor_id'),
-            'kinds' => AssetKind::all(['id', 'type_name']),
-            'vendors' => Vendor::all(['id', 'name']),
+            'assetkind' => $assetkind,
+            'category' => $assetkind->category,
+            'vendors' => Vendor::all(['id', 'name', 'address', 'phone', 'owner_name', 'tax_id']),
         ]);
     }
 
@@ -59,18 +57,28 @@ class AssetController extends Controller
             'warranty_months' => 'nullable|integer',
         ]);
 
-        $asset = Asset::create($validated);
+        Asset::create($validated);
 
-        return redirect()->route('assets.index')->with('success', 'เพิ่มครุภัณฑ์แล้ว');
+        return redirect()->back()->with('success', 'เพิ่มครุภัณฑ์แล้ว');
     }
 
     public function edit(Asset $asset)
     {
-        return inertia('Assets/Edit', [
+        return response()->json([
             'asset' => $asset->load('kind', 'vendor'),
             'kinds' => AssetKind::all(['id', 'type_name']),
             'vendors' => Vendor::all(['id', 'name']),
         ]);
+        /*return inertia('Assets/Edit', [
+            'asset' => $asset->load('kind', 'vendor'),
+            'kinds' => AssetKind::all(['id', 'type_name']),
+            'vendors' => Vendor::all(['id', 'name']),
+        ]);*/
+    }
+
+    public function show(Asset $asset)
+    {
+        return response()->json($asset);
     }
 
     public function update(Request $request, Asset $asset)

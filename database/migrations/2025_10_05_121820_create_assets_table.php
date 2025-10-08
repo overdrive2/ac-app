@@ -19,6 +19,7 @@ return new class extends Migration
             $table->date('buy_date')->nullable();
             $table->decimal('price', 12, 2)->nullable();
             $table->foreignId('vendor_id')->nullable()->constrained()->nullOnDelete();
+            $table->smallInteger('warranty_months')->nullable();
             $table->timestamps();
         });
     }
