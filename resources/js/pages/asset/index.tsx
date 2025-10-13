@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import AppLayout from '@/layouts/app-layout'
-import { Asset, type BreadcrumbItem } from '@/types'
+import { Asset, AssetCategory, AssetKind, type BreadcrumbItem } from '@/types'
 import { Head, router, usePage } from '@inertiajs/react'
 
 import { assetColumns } from '@/columns/assetColumns'
@@ -12,31 +12,38 @@ import { DataTable } from '@/components/datatable'
 import AppPagination from '@/components/pagination'
 
 import { toast } from 'sonner'
-import { assetkinds, categories, dashboard } from '@/routes'
+import { categories, dashboard } from '@/routes'
 import assets from '@/routes/assets'
 import { CirclePlus } from 'lucide-react'
-import NewAssetDialog from '@/components/new-asset-dialog'
+import AssetDialog from '@/components/asset-dialog'
 import assetkind from '@/routes/assetkind'
-import asset from '@/routes/asset'
+
+interface Props {
+  rows: {
+    data: Asset[];
+    links: any[];
+  };
+  filters: any;
+  assetkind: AssetKind;
+  category: AssetCategory;
+  vendors: any[];
+}
 
 export default function AssetIndex() {
-  const { rows, filters, assetkind: currentAssetKind, category, vendors } = usePage().props
+  const { rows, filters, assetkind: currentAssetKind, category, vendors } = usePage<Props>().props
   const [search, setSearch] = useState(filters?.search || '')
 
   const [loading, setLoading] = useState(false)
   const [loadingAsset, setLoadingAsset] = useState(false)
   const [dataAsset, setDataAsset] = useState<Asset | null>(null)
   const [dialogNewOpen, setDialogNewOpen] = useState(false)
-  const [dialogOpen, setDialogOpen] = useState(false)
 
   const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Dashboard', href: dashboard().url },
-    { title: "Asset Categories", href: categories().url },
-    { title: category.name ?? '', href: assetkinds(category).url },
-    { title: currentAssetKind.type_name ?? '', href: '' },
+    { title: "Asset Categories", href: categories().url }
   ];
 
-  const [dsState, setDsState] = useState("update")
+  const [dsState, setDsState] = useState<"insert" | "update">("update")
 
   const openNew = async () => {
     setDsState("insert")
@@ -50,7 +57,7 @@ export default function AssetIndex() {
     try {
       const res = await fetch(assets.edit(assetData).url)
       const data = await res.json();
-      const asset : Asset = await data.asset;
+      const asset: Asset = await data.asset;
       setDataAsset(asset)
     } finally {
       setLoadingAsset(false)
@@ -70,7 +77,25 @@ export default function AssetIndex() {
     })
   }
 
-  const columns = assetColumns({ openEdit, deleteAsset })
+  const [selectedIds, setSelectedIds] = useState<number[]>([])
+
+  const toggleSelect = (id: number, selected: boolean) => {
+    setSelectedIds((prev) =>
+      selected ? [...prev, id] : prev.filter((x) => x !== id)
+    )
+  }
+
+  const toggleSelectAll = (selected: boolean) => {
+    setSelectedIds(selected ? rows.data.map((row) => row.id) : [])
+  }
+
+  const columns = assetColumns({
+    openEdit,
+    deleteAsset,
+    toggleSelect,
+    toggleSelectAll,
+    selectedIds,
+  })
 
   const handlePageChange = (url: string) => {
     if (!url) return
@@ -85,6 +110,45 @@ export default function AssetIndex() {
         onFinish: () => setLoading(false),
       }
     )
+  }
+
+  const handleBatchPrintPDF = () => {
+    if (selectedIds.length === 0) {
+      toast.warning("กรุณาเลือกรายการทรัพย์สินก่อนพิมพ์")
+      return
+    }
+
+    const form = document.createElement("form")
+    form.method = "POST"
+    form.action = assets.qr.batch.pdf().url
+    form.target = "_blank"
+
+    // CSRF token
+    const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute("content")
+
+    if (!token) {
+      toast.error("CSRF token not found")
+      return
+    }
+
+    const csrfInput = document.createElement("input")
+    csrfInput.type = "hidden"
+    csrfInput.name = "_token"
+    csrfInput.value = token
+    form.appendChild(csrfInput)
+
+    // Add selected IDs
+    selectedIds.forEach((id) => {
+      const input = document.createElement("input")
+      input.type = "hidden"
+      input.name = "ids[]"
+      input.value = id.toString()
+      form.appendChild(input)
+    })
+
+    document.body.appendChild(form)
+    form.submit()
+    document.body.removeChild(form)
   }
 
   const handleSearch = () => {
@@ -115,6 +179,9 @@ export default function AssetIndex() {
               onChange={e => setSearch(e.target.value)}
             />
             <Button onClick={handleSearch}>Search</Button>
+            <Button onClick={handleBatchPrintPDF} disabled={selectedIds.length === 0}>
+              พิมพ์ QR Code ({selectedIds.length})
+            </Button>
           </div>
 
           {loading ? (
@@ -135,13 +202,13 @@ export default function AssetIndex() {
           )}
         </div>
       </div>
-      <NewAssetDialog
+      <AssetDialog
         open={dialogNewOpen}
         onOpenChange={setDialogNewOpen}
         form={dataAsset}
-        assetkind={currentAssetKind}
-        category={category}
-        vendors={vendors}
+        category={category as AssetCategory | null}
+        assetkind={currentAssetKind as AssetKind | null}
+        loading={loadingAsset}
         dsState={dsState}
       />
     </AppLayout>

@@ -22,6 +22,12 @@ class VendorController extends Controller
         ]);
     }
 
+    public function json()
+    {
+        $vendors = Vendor::orderBy('name', 'asc')->get();
+        return response()->json(['vendors' => $vendors]);
+    }
+
     public function store(Request $request)
     {
         $validated = $request->validate([

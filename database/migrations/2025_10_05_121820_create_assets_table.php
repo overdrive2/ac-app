@@ -13,13 +13,10 @@ return new class extends Migration
     {
         Schema::create('assets', function (Blueprint $table) {
             $table->id();
-            $table->string('asset_code')->unique(); // หมายเลขครุภัณฑ์
-            $table->string('asset_name');
-            $table->foreignId('asset_kind_id')->constrained()->cascadeOnDelete(); // FK to asset_kinds
-            $table->date('buy_date')->nullable();
+            $table->string('asset_code', 50)->unique();
+            $table->string('asset_name', 255);
+            $table->foreignId('asset_kind_id')->constrained()->cascadeOnDelete();
             $table->decimal('price', 12, 2)->nullable();
-            $table->foreignId('vendor_id')->nullable()->constrained()->nullOnDelete();
-            $table->smallInteger('warranty_months')->nullable();
             $table->timestamps();
         });
     }

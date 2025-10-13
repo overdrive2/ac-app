@@ -8,6 +8,9 @@ use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
+
+//Route::post('/login')->withoutMiddleware([VerifyCsrfToken::class]);
 
 Route::middleware('guest')->group(function () {
     Route::get('register', [RegisteredUserController::class, 'create'])
@@ -17,9 +20,11 @@ Route::middleware('guest')->group(function () {
         ->name('register.store');
 
     Route::get('login', [AuthenticatedSessionController::class, 'create'])
+        ->withoutMiddleware([VerifyCsrfToken::class])
         ->name('login');
 
     Route::post('login', [AuthenticatedSessionController::class, 'store'])
+        ->withoutMiddleware([VerifyCsrfToken::class])
         ->name('login.store');
 
     Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])

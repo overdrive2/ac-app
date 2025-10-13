@@ -11,11 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('asset_images', function (Blueprint $table) {
+        Schema::create('brands', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('asset_id')->constrained()->cascadeOnDelete();
-            $table->string('image_path'); // เก็บ path หรือ URL
-            $table->string('caption')->nullable(); // คำอธิบายรูป
+            $table->string('brand_name', 100);
+            $table->string('brand_name_en', 100)->nullable();
+            $table->string('model', 100)->nullable();
+            $table->string('origin_country', 100)->nullable();
+            $table->string('contact_info', 255)->nullable();
             $table->timestamps();
         });
     }
@@ -25,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('asset_images');
+        Schema::dropIfExists('brands');
     }
 };
