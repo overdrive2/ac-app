@@ -24,7 +24,7 @@ export default function AuthSimpleLayout({
                             href={home()}
                             className="flex flex-col items-center gap-2 font-medium"
                         >
-                            <div className="flex h-24 w-24 items-center justify-center rounded-md">
+                            <div className="flex h-20 w-20 items-center justify-center rounded-md">
                                 <AppLogoIcon2 />
                             </div>
                             <span className="sr-only">{title}</span>

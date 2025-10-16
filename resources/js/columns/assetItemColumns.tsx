@@ -10,6 +10,7 @@ import { PopoverClose } from "@radix-ui/react-popover"
 import { Edit, Trash, Info } from "lucide-react"
 import { Checkbox } from "@/components/ui/checkbox"
 import { router } from "@inertiajs/react"
+import assetItems from "@/routes/asset-items"
 
 interface AssetItemColumnsProps {
   openEdit: (item: AssetItem) => void
@@ -119,7 +120,7 @@ export function assetItemColumns({
               variant="ghost"
               className="w-full justify-start px-3 py-2 hover:bg-muted"
               onClick={() =>
-                router.get(route("asset-items.show", row.original.id))
+                window.open(assetItems.show(row.original).url, '_blank')
               }
             >
               <Info className="mr-2 h-4 w-4" />

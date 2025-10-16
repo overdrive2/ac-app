@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\AssetItem;
+use App\Models\Brand;
+use App\Models\Vendor;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -32,5 +34,16 @@ class AssetItemController extends Controller
         $assetItem->update($validated);
 
         return redirect()->back()->with('success', 'อัปเดตข้อมูลครุภัณฑ์ย่อยเรียบร้อยแล้ว');
+    }
+
+    public function show(AssetItem $assetItem)
+    {        
+        return inertia('asset/asset-item-detail', [
+            'asset' => $assetItem->asset,
+            'assetItem' => $assetItem->load('vendor', 'brand'),
+            'images' => $assetItem->asset->images,
+            'vendors' => Vendor::all(),
+            'brands' => Brand::all(),
+        ]);
     }
 }

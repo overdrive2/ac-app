@@ -85,16 +85,15 @@ class Asset extends Model
 
     // สร้างรหัสครุภัณฑ์ย่อยอัตโนมัติ
     public function generateItems(
-        int $quantity, 
-        ?int $vendorId = null, 
+        int $quantity,
+        ?int $vendorId = null,
         ?string $itemName = null,
-        ?string $buyDate = null, 
-        ?float $price = null, 
+        ?string $buyDate = null,
+        ?float $price = null,
         ?int $warrantyMonths = null,
-        ?string $remark = null, 
+        ?string $remark = null,
         ?int $brandId = null,
-    )
-    {
+    ) {
         $last = $this->items()->orderByDesc('id')->first();
         $lastNo = 0;
 

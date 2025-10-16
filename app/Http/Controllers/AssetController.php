@@ -146,7 +146,6 @@ class AssetController extends Controller
 
     public function generateItems(Request $request, Asset $asset)
     {
-        //dd($request->all());
         $request->validate([
             'quantity' => 'required|integer|min:1',
             'vendor_id' => 'nullable|integer',

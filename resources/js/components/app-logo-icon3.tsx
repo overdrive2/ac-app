@@ -1,10 +1,10 @@
 import AppLogo from "./app-img-logo";
 
-export default function AppLogoIcon2() {
+export default function AppLogoIcon3() {
     return (
         <AppLogo
-            src="/asm-logo-3.png"
-            srcDark="/asm-logo-3.png"
+            src="/applogo.png"
+            srcDark="/applogo.png"
             className="w-full h-full object-contain"
             alt="ASM"
         />

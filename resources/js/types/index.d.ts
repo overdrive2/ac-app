@@ -110,6 +110,11 @@ export interface AssetItem {
   remark?: string
   created_at?: string
   updated_at?: string
+  // relations
+  assignments?: AssetAssignment[]
+  current_assignment?: AssetAssignment | null
+  repairs?: AssetRepair[]
+  latest_repair?: AssetRepair | null
 }
 
 export interface GenerateAssetItemsData {
@@ -118,4 +123,69 @@ export interface GenerateAssetItemsData {
   buy_date?: string | null
   price?: number | null
   warranty_months?: number | null
+}
+
+/* ──────────────────────────────
+   🏢 Department & Staff
+────────────────────────────── */
+export interface Department {
+  id: number
+  name: string
+  short_name?: string | null
+  parent_id?: number | null
+  parent?: Department | null
+  created_at?: string
+  updated_at?: string
+}
+
+export interface Staff {
+  id: number
+  staff_code: string
+  full_name: string
+  position?: string | null
+  department_id?: number | null
+  department?: Department | null
+  active?: boolean
+  created_at?: string
+  updated_at?: string
+}
+
+/* ──────────────────────────────
+   🧾 Asset Assignment (จ่ายให้เจ้าหน้าที่)
+────────────────────────────── */
+export interface AssetAssignment {
+  id: number
+  asset_item_id: number
+  staff_id?: number | null
+  department_id?: number | null
+  assigned_date: string
+  returned_date?: string | null
+  status: 'active' | 'returned' | 'transferred'
+  note?: string | null
+  staff?: Staff | null
+  department?: Department | null
+  created_at?: string
+  updated_at?: string
+}
+
+/* ──────────────────────────────
+   🔧 Asset Repair (ส่งซ่อมภายนอก)
+────────────────────────────── */
+export interface AssetRepair {
+  id: number
+  asset_item_id: number
+  vendor_id?: number | null
+  sent_date: string
+  repair_days?: number | null
+  symptom?: string | null
+  sender_name: string
+  contact_person?: string | null
+  contact_phone?: string | null
+  returned_date?: string | null
+  status: 'sent' | 'repairing' | 'completed' | 'cancelled'
+  note?: string | null
+  vendor?: Vendor | null
+  asset_item?: AssetItem | null
+  created_at?: string
+  updated_at?: string
 }

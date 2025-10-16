@@ -52,6 +52,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     
     Route::post('/assets/{asset}/generate-items', [AssetController::class, 'generateItems'])->name('assets.generate-items');
     Route::put('/asset-items/{assetItem}', [AssetItemController::class, 'update'])->name('asset-items.update');
+    Route::get('/asset-item-show/{assetItem}', [AssetItemController::class, 'show'])->name('asset-items.show');
 
     Route::resource('vendors', VendorController::class)->only(['index', 'show', 'store', 'update', 'destroy']);
     Route::get('vendors-json', [VendorController::class, 'json'])->name('vendors.json');
