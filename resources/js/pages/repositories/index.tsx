@@ -3,10 +3,12 @@ import { PlaceholderPattern } from '@/components/ui/placeholder-pattern';
 import AppLayout from '@/layouts/app-layout';
 import { cn } from '@/lib/utils';
 import { dashboard, repository } from '@/routes';
+import departments from '@/routes/departments';
+import positions from '@/routes/positions';
 import vendors from '@/routes/vendors';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
-import { Save, Store } from 'lucide-react';
+import { Briefcase, Building2, PersonStanding, Save, Store } from 'lucide-react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -28,12 +30,34 @@ export default function Repository() {
                     <a href={vendors.index().url} rel="noopener noreferrer">
                         <Button
                             className={cn(
-                                "flex h-auto flex-col items-center justify-center gap-1 py-3 px-4 w-20"
+                                "flex h-auto flex-col items-center justify-center gap-1 py-3 px-4 w-24"
                             )}
                             variant="outline"
                         >
                             <Store className="h-5 w-5" />
                             <span className="text-xs">Vendors</span>
+                        </Button>
+                    </a>
+                    <a href={positions.index().url} rel="noopener noreferrer">
+                        <Button
+                            className={cn(
+                                "flex h-auto flex-col items-center justify-center gap-1 py-3 px-4 w-24"
+                            )}
+                            variant="outline"
+                        >
+                            <Briefcase className="h-5 w-5" />
+                            <span className="text-xs">Position</span>
+                        </Button>
+                    </a>
+                    <a href={departments.index().url} rel="noopener noreferrer">
+                        <Button
+                            className={cn(
+                                "flex h-auto flex-col items-center justify-center gap-1 py-3 px-4 w-24"
+                            )}
+                            variant="outline"
+                        >
+                            <Building2 className="h-5 w-5" />
+                            <span className="text-xs">Department</span>
                         </Button>
                     </a>
                 </div>

@@ -10,11 +10,12 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { assetkinds, categories, dashboard, repository, users } from '@/routes';
+import { categories, dashboard, repository, users } from '@/routes';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { BookOpen, Folder, FolderTree, LayoutGrid, SquareLibrary, User2 } from 'lucide-react';
+import { BookOpen, Folder, FolderTree, IdCard, LayoutGrid, SquareLibrary, User2, UserRound } from 'lucide-react';
 import AppLogo from './app-logo';
+import staffs from '@/routes/staffs';
 
 const mainNavItems: NavItem[] = [
     {
@@ -23,9 +24,14 @@ const mainNavItems: NavItem[] = [
         icon: LayoutGrid,
     },
     {
+        title: 'Staffs',
+        href: staffs.index().url,
+        icon: IdCard,
+    },
+    {
         title: 'Users',
         href: users(),
-        icon: User2,
+        icon: UserRound,
     },
     {
         title: 'Category',

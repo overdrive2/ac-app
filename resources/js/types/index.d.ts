@@ -142,7 +142,8 @@ export interface Staff {
   id: number
   staff_code: string
   full_name: string
-  position?: string | null
+  position_id?: number | null
+  position?: Position | null
   department_id?: number | null
   department?: Department | null
   active?: boolean
@@ -188,4 +189,11 @@ export interface AssetRepair {
   asset_item?: AssetItem | null
   created_at?: string
   updated_at?: string
+}
+
+export interface Position {
+  id: number;
+  name: string;
+  created_at?: string;
+  updated_at?: string;
 }

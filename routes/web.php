@@ -6,6 +6,9 @@ use App\Http\Controllers\AssetImageController;
 use App\Http\Controllers\AssetItemController;
 use App\Http\Controllers\AssetKindController;
 use App\Http\Controllers\AssetQrController;
+use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\PositionController;
+use App\Http\Controllers\StaffController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VendorController;
 use Illuminate\Http\Request;
@@ -56,13 +59,22 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::resource('vendors', VendorController::class)->only(['index', 'show', 'store', 'update', 'destroy']);
     Route::get('vendors-json', [VendorController::class, 'json'])->name('vendors.json');
-    // routes/web.php
     
+    // routes/web.php
     Route::post('/assets/qr/batch-pdf', [AssetQrController::class, 'batchPdf'])->name('assets.qr.batch.pdf');
     Route::get('/private/{path}', function (Request $request, $path) {
         $disk = Storage::disk('local'); // local -> storage/app/private
         return response()->file($disk->path($path));
     })->name('private.file')->where('path', '.*');
+
+    Route::resource('staff', StaffController::class)->only(['show', 'store', 'update', 'destroy']);
+    Route::get('staffs', [StaffController::class, 'index'])->name('staffs.index');
+
+    Route::resource('department', DepartmentController::class)->only(['show', 'store', 'update', 'destroy']);
+    Route::get('departments', [DepartmentController::class, 'index'])->name('departments.index');
+
+    Route::resource('position', PositionController::class)->only(['show', 'store', 'update', 'destroy']);
+    Route::get('positions', [PositionController::class, 'index'])->name('positions.index');
 });
 
 require __DIR__.'/settings.php';
